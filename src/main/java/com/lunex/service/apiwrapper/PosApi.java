@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.lunex.service.apiwrapper.posapi.Account;
+import com.lunex.service.apiwrapper.posapi.AccountResponse;
+import com.lunex.service.apiwrapper.posapi.PosApiException;
 
 public class PosApi extends BaseXmlApi {
 	public PosApi(String target) {
@@ -40,5 +42,13 @@ public class PosApi extends BaseXmlApi {
 			accounts.add(acct);
 		}
 		return accounts;
+	}
+	
+	public Account getAccount(String seller, String sku, String phone) throws PosApiException {
+		AccountResponse account = this.get(String.format("sellers/%s/sku/%s/phone/%s", seller, sku, phone), null, AccountResponse.class);
+		if (account.code < 0) {
+			throw new PosApiException(account.code, account.message);
+		}
+		return account.account;
 	}
 }

@@ -10,8 +10,6 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +22,7 @@ public class BaseApi {
 	
 	public void setTarget(String target) {
 		this.target = client.target(target).register(JacksonFeature.class);
-		ClientConfig clientConfig = new ClientConfig();
+		//ClientConfig clientConfig = new ClientConfig();
 		//clientConfig.register(new LoggingFilter(logger, false));
 	}
 	
@@ -67,10 +65,12 @@ public class BaseApi {
 	protected Invocation.Builder getInvocationBuilder(String path, String acceptType, 
 			Map<String, String> queryParams) {
 		WebTarget resourceWebTarget = this.target.path(path);
-		for(Entry<String, String> entry : queryParams.entrySet()) {
-		    String key = entry.getKey();
-		    String value = entry.getValue();
-		    resourceWebTarget = resourceWebTarget.queryParam(key, value);
+		if (queryParams != null) {
+			for(Entry<String, String> entry : queryParams.entrySet()) {
+			    String key = entry.getKey();
+			    String value = entry.getValue();
+			    resourceWebTarget = resourceWebTarget.queryParam(key, value);
+			}
 		}
 		
 		Invocation.Builder invocationBuilder =
