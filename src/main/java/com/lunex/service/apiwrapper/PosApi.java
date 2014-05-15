@@ -45,6 +45,8 @@ public class PosApi extends BaseXmlApi {
 	}
 	
 	public Account getAccount(String seller, String sku, String phone) throws PosApiException {
+		if (sku == null || sku == "" || phone == null || phone == "")
+			throw new PosApiException(-1, "Invalid parameters");
 		AccountResponse account = this.get(String.format("sellers/%s/sku/%s/phone/%s", seller, sku, phone), null, AccountResponse.class);
 		if (account.code < 0) {
 			throw new PosApiException(account.code, account.message);
