@@ -3,6 +3,8 @@ package com.lunex.service.apiwrapper.infobip;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(name = "hlr")
 public class Hlr {
 	@XmlElement
@@ -11,6 +13,7 @@ public class Hlr {
 	public String id;
 	@XmlElement
 	public String stat;
+	@JsonProperty("IMSI")
 	@XmlElement(name = "IMSI")
 	public String imsi;
 	@XmlElement
@@ -29,12 +32,13 @@ public class Hlr {
 	public String ocn;
 	@XmlElement
 	public int ocp;
+	@JsonProperty("is_ported")
 	@XmlElement(name = "is_ported")
 	public boolean isPorted;
-	@XmlElement(name = "pnp")
+	@XmlElement
 	public String pnp;
-	@XmlElement(name = "pcn")
+	@XmlElement
 	public String pcn;
-	@XmlElement(name = "pcp")
+	@XmlElement
 	public int pcp;
 }
