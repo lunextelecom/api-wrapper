@@ -17,9 +17,9 @@ public class SmsService extends BaseXmlApi {
     params.put("srcnum", srcNum);
     params.put("dstnum", dstNum);
 
-    String url = String.format("type/Refill/lang/en/");
-    SmsResponse smsResponse = this.post(url, params, data, SmsResponse.class);
-    if (smsResponse.code < 0) {
+    String url = String.format("type/Refill/lang/en/?srcnum=%s&dstnum=%s", srcNum, dstNum);
+    SmsResponse smsResponse = this.postXml(url, params, data, SmsResponse.class);
+    if (smsResponse != null && smsResponse.code < 0) {
       throw new SmsException(smsResponse.code, smsResponse.message);
     }
   }
@@ -37,7 +37,7 @@ public class SmsService extends BaseXmlApi {
             .append("</Data>").toString();
 
     String accessNum = "2605856146";
-    String orderBonus = "10";
+    String orderBonus = "11";
     String companyName = "1ClicMax";
     String companyUrl = "www.LunexTelecom.com";
     String csPhone = "8883332404";

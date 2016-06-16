@@ -62,7 +62,7 @@ public class PosApi extends BaseXmlApi {
 	  if (StringUtils.isEmpty(seller) || StringUtils.isEmpty(pin) || StringUtils.isEmpty(registerPhone)) {
 	    throw new PosApiException(-1, "Invalid parameters");
 	  }
-	  RegisterPhoneResponse registerPhoneResponse = this.get(String.format("seller/%s/pin/%s/registerphone/%s", seller, pin, registerPhone), null, RegisterPhoneResponse.class);
+	  RegisterPhoneResponse registerPhoneResponse = this.getJson(String.format("sellers/%s/pin/%s/registerphone/%s", seller, pin, registerPhone), null, RegisterPhoneResponse.class);
 	  if (registerPhoneResponse.code < 0) {
 	    throw new PosApiException(registerPhoneResponse.code, registerPhoneResponse.message);
 	  }
