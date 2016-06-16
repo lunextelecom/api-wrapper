@@ -1,6 +1,7 @@
 package com.lunex.service.apiwrapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -11,6 +12,8 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -102,8 +105,15 @@ public class BaseApi {
 	        HttpEntity entity = new ByteArrayEntity(data.getBytes("UTF-8"));
 	        httpAction.setEntity(entity);
 	        httpResponse = httpClient.execute(httpAction);
-	        String sXmlResponse = EntityUtils.toString(httpResponse.getEntity());
-	        obj = this.mapper.readValue(sXmlResponse, responseObjType);
+
+	        //String sXmlResponse = EntityUtils.toString(httpResponse.getEntity());
+	        //StringReader stream = new StringReader(sXmlResponse);
+
+	        JAXBContext jc = JAXBContext.newInstance(responseObjType);
+	        Unmarshaller unmarshaller = jc.createUnmarshaller();
+	        InputStream stream = httpResponse.getEntity().getContent();
+
+	        obj = (T) unmarshaller.unmarshal(stream);
 	    } catch (Exception ex) {
 	        logger.error(ex.getMessage(), ex);
 	    } finally {
