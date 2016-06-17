@@ -12,12 +12,12 @@ public class SmsService extends BaseXmlApi {
     super(target);
   }
 
-  public void sendSms(String srcNum, String dstNum, String data) throws SmsException {
+  public void sendSms(String language, String srcNum, String dstNum, String data) throws SmsException {
     Map<String, String> params = new HashMap<String, String>();
     params.put("srcnum", srcNum);
     params.put("dstnum", dstNum);
 
-    String url = String.format("type/Refill/lang/en/?srcnum=%s&dstnum=%s", srcNum, dstNum);
+    String url = String.format("type/Refill/lang/%s/?srcnum=%s&dstnum=%s", language, srcNum, dstNum);
     SmsResponse smsResponse = this.postXml(url, params, data, SmsResponse.class);
     if (smsResponse != null && smsResponse.code < 0) {
       throw new SmsException(smsResponse.code, smsResponse.message);
@@ -48,7 +48,7 @@ public class SmsService extends BaseXmlApi {
     String dstNum = "7272334556";
 
     try {
-      s.sendSms(srcNum, dstNum, data);
+      s.sendSms("en", srcNum, dstNum, data);
     } catch (Exception ex) {
       System.out.println(ex);
     }
