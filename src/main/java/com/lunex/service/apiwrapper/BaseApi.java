@@ -59,34 +59,51 @@ public class BaseApi {
 		return response.readEntity(responseObjType);
 	}
 
+	private <T> T getByHttpClient(String path, String acceptType, Map<String, String> queryParams, Class<T> responseObjType) {
+	    CloseableHttpClient httpClient = HttpClients.createDefault();
+	    CloseableHttpResponse httpResponse = null;
+	    T obj = null;
+	    try {
+	        HttpGet httpAction = new HttpGet(this.sTarget + path);
+	        httpAction.setHeader("Accept", acceptType);
+	        httpResponse = httpClient.execute(httpAction);
+	        if (acceptType.equals(MediaType.APPLICATION_JSON)) {
+	        	String sJsonResponse = EntityUtils.toString(httpResponse.getEntity());
+	        	obj = this.mapper.readValue(sJsonResponse, responseObjType);
+	        } else if (acceptType.equals(MediaType.APPLICATION_XML)) {
+	        	JAXBContext jc = JAXBContext.newInstance(responseObjType);
+		        Unmarshaller unmarshaller = jc.createUnmarshaller();
+		        InputStream stream = httpResponse.getEntity().getContent();
+
+		        obj = (T) unmarshaller.unmarshal(stream);
+	        }
+	        
+	    } catch (Exception ex) {
+	        logger.error(ex.getMessage(), ex);
+	    } finally {
+	        try {
+	            httpClient.close();
+	        } catch (IOException e) {
+	            logger.error(e.getMessage(), e);
+	        }
+	        try {
+	            if (httpResponse != null) {
+	                httpResponse.close();
+	            }
+	        } catch (IOException e) {
+	            logger.error(e.getMessage(), e);
+	        }
+	    }
+	    return obj;
+	}
+	
 	public <T> T getJson(String path, Map<String, String> queryParams, Class<T> responseObjType) {
-    CloseableHttpClient httpClient = HttpClients.createDefault();
-    CloseableHttpResponse httpResponse = null;
-    T obj = null;
-    try {
-        HttpGet httpAction = new HttpGet(this.sTarget + path);
-        httpAction.setHeader("Accept", MediaType.APPLICATION_JSON);
-        httpResponse = httpClient.execute(httpAction);
-        String sJsonResponse = EntityUtils.toString(httpResponse.getEntity());
-        obj = this.mapper.readValue(sJsonResponse, responseObjType);
-    } catch (Exception ex) {
-        logger.error(ex.getMessage(), ex);
-    } finally {
-        try {
-            httpClient.close();
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-        try {
-            if (httpResponse != null) {
-                httpResponse.close();
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-    return obj;
-}
+		return this.getByHttpClient(path, MediaType.APPLICATION_JSON, queryParams, responseObjType);
+	}
+	
+	public <T> T getXml(String path, Map<String, String> queryParams, Class<T> responseObjType) {
+		return this.getByHttpClient(path, MediaType.APPLICATION_XML, queryParams, responseObjType);
+	}
 
 	public <T1, T2> T1 post(String path, String contentType, String acceptType,
 			Map<String, String> queryParams, T2 contentObj, Class<T1> responseObjType) {
